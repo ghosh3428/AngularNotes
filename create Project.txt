@@ -1,0 +1,33 @@
+1) Download and install Node
+
+	https://nodejs.org/en/download
+
+2) Install Angular CLI
+
+	npm install -g @angular/cli
+
+3)Create angular project
+
+	ng new ProjectName
+
+4)Open Project in VisualCode
+
+	code .
+
+5)install boostrap and jquery
+	npm install bootstrap
+	npm install jquery
+
+6) Update angular.json
+	"styles": [
+              "node_modules/bootstrap/dist/css/boostrap.min.css",
+              "src/styles.css"
+            ],
+        "scripts": [
+              "node_modules/bootstrap/dist/js/boostrap.min.js",
+              "node_modules/jquery/dist/jquery.min.js"
+            ]
+
+7) Compile and execute the application
+
+	ng serve --open

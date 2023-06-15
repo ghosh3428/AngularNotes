@@ -1,0 +1,59 @@
+ROUTING :
+
+1) Import the RouterModule into the application root module AppModule
+	
+import { RouterModule } from '@angular/router';
+-----------------------------------------------------------------------------
+2) Include RouterModule in the "imports" array of the @NgModule() decorator
+	
+@NgModule({
+  declarations: [...
+  ],
+  imports: [
+    BrowserModule,
+    RouterModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+-----------------------------------------------------------------------------
+3)  import Routes type from '@angular/router'
+
+import { RouterModule, Routes } from '@angular/router';
+-----------------------------------------------------------------------------
+4) Configure the application routes
+
+const appRoutes: Routes = [
+  { path: 'list', component: ListEmployeesComponent },
+  { path: 'create', component: CreateEmployeeComponent },
+  { path: '', redirectTo: '/list', pathMatch: 'full' }
+];
+-----------------------------------------------------------------------------
+5) let the router know about the routes configured
+
+@NgModule({
+declarations: [...
+],
+imports: [
+  BrowserModule,
+  RouterModule.forRoot(appRoutes)
+],
+providers: [],
+bootstrap: [AppComponent]
+})
+-----------------------------------------------------------------------------
+6) Create the application menu and tie the routes to it
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <ul class="nav navbar-nav">
+            <li>
+                <a routerLink="list">List</a>
+            </li>
+            <li>
+                <a routerLink="create">Create</a>
+            </li>
+        </ul>
+    </nav>
+    <router-outlet></router-outlet>
+</div>

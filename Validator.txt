@@ -1,0 +1,124 @@
+Step 1 - Import Angular Validators class : The first thing to do, when implementing validation in a reactive form is to import angular's Validators class. 
+
+import { Validators } from '@angular/forms';
+
+This class has the following validator functions
+
+Function	Description
+required	Validate that a field has a value. Used for required fields. For example, Name is required.
+requiredTrue	Validate that the field value is true. This validator is commonly used on a required checkbox. For example, "I Agree to the terms" checkbox must be checked to submit the form.
+email	Validate that the field value has a valid email pattern. For example, abc is not a valid email.
+pattern	Validate that the field value matches the specified regex pattern.
+min	Validate that the field value is greater than or equal to the provided number. For example, minimum age to vote is 18.
+max	Validate that the field value is less than or equal to the provided number. For example, people over the age of 90 are not eligible for this insurance policy.
+minLength	The number of characters in the field must be greater than or equal to the provided minimum length. For example, Full Name must be at least 3 characters.
+maxLength	The number of characters in the field must be less than or equal to the provided maximum length. For example, Description cannot exceed 500 characters.
+
+Most of our validation requirements can be met using one or more of the following built-in validator functions. You can also write your own custom validator, if your requirements are not met using one of the above built-in validator functions. We will discuss, implementing a custom validator in a reactive form in our upcoming videos.
+
+Step 2 - Specify the validators on the fullName Field : Notice, along with a default value of empty string, we are passing an array of validator functions. In our case 3 - required, minLength and maxLength.
+
+this.employeeForm = this.fb.group({
+  fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(10)]],
+  // OtherFields...
+});
+
+Step 3 - Modify the fullName field in the template to display validation error messages.
+
+<div class="form-group"
+      [ngClass]="{'has-error': ((employeeForm.get('fullName').touched ||
+                                 employeeForm.get('fullName').dirty) &&
+                                 employeeForm.get('fullName').errors)}">
+  <label class="col-sm-2 control-label" for="fullName">Full Name</label>
+  <div class="col-sm-8">
+    <input id="fullName" type="text" class="form-control" formControlName="fullName">
+    <span class="help-block"
+          *ngIf="((employeeForm.get('fullName').touched ||
+                   employeeForm.get('fullName').dirty) &&
+                   employeeForm.get('fullName').errors)">
+      <span *ngIf="employeeForm.get('fullName').errors.required">
+        Full Name is required
+      </span>
+      <span *ngIf="employeeForm.get('fullName').errors.minlength ||
+                   employeeForm.get('fullName').errors.maxlength">
+          Full Name must be greater than 2 characters and less than 10 characters
+      </span>
+    </span>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+ 
+
+For example, if you want to monitor and log to the console as the value of a fullName form control changes, subscribe to it's valueChanges observable as shown below.
+
+ngOnInit() {
+
+  this.employeeForm = this.fb.group({
+    fullName: ['',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(10)]
+    ],
+    email: [''],
+    skills: this.fb.group({
+      skillName: ['C#'],
+      experienceInYears: [''],
+      proficiency: ['beginner']
+    }),
+  });
+
+  // Subscribe to valueChanges observable
+  this.employeeForm.get('fullName').valueChanges.subscribe(
+    value => {
+      console.log(value);
+    }
+  );
+
+}
+
+We placed the code to subscribe to the valueChanges Observable in ngOnInit lifecycle hook. This is because, we want to start monitoring and reacting to fullName form control value immediately after the component is initialised.
+
+Every time the value of the fullName form control changes, the value is passed as a parameter to the subscribe method and the associated code is executed.
+
+Since FormGroup class also inherit from AbstractControl class, we can also subscribe to the FormGroup valueChanges observable. This allows us to monitor and react when any control value in that FormGroup changes.
+
+// Subscribe to FormGroup valueChanges observable
+this.employeeForm.valueChanges.subscribe(
+  value => {
+    console.log(JSON.stringify(value));
+  }
+);
+
+
+
+
+
+
+Here is the method. It is commented and self-explanatory
+
+logKeyValuePairs(group: FormGroup): void {
+  // loop through each key in the FormGroup
+  Object.keys(group.controls).forEach((key: string) => {
+    // Get a reference to the control using the FormGroup.get() method
+    const abstractControl = group.get(key);
+    // If the control is an instance of FormGroup i.e a nested FormGroup
+    // then recursively call this same method (logKeyValuePairs) passing it
+    // the FormGroup so we can get to the form controls in it
+    if (abstractControl instanceof FormGroup) {
+      this.logKeyValuePairs(abstractControl);
+      // If the control is not a FormGroup then we know it's a FormControl
+    } else {
+      console.log('Key = ' + key + ' && Value = ' + abstractControl.value);
+    }
+  });
+}

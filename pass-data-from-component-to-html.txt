@@ -1,0 +1,123 @@
+1) Create Model
+
+export class Employee 
+{
+    id: number;
+    name: string;
+    gender: string;
+    email?: string;
+    phoneNumber?: number;
+    contactPreference: string;
+    dateOfBirth: Date;
+    department: string;
+    isActive: boolean;
+    photoPath?: string;
+}
+-----------------------------------------------------------------------------
+2) Add Data in the component.ts file
+
+employees: Employee[] = [
+    {
+      id: 1,
+      name: 'A',
+      gender: 'B',
+      contactPreference: 'C',
+      email: 'D',
+      dateOfBirth: E,
+      department: 'F',
+      isActive: G,
+      photoPath: 'H'
+    },
+  ];
+-----------------------------------------------------------------------------
+3) Update component.html
+
+<div class="panel panel-primary" *ngFor="let employee of employees">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{employee.name}}</h3>
+  </div>
+  <div class="panel-body">
+
+    <div class="col-xs-10">
+
+      <div class="row vertical-align">
+
+        <div class="col-xs-4">
+          <img class="imageClass" [src]="employee.photoPath" />
+        </div>
+        <div class="col-xs-8">
+
+          <div class="row">
+            <div class="col-xs-6">
+              Gender
+            </div>
+            <div class="col-xs-6">
+              : {{employee.gender}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Date of Birth
+            </div>
+            <div class="col-xs-6">
+              : {{employee.dateOfBirth | date}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Contact Preference
+            </div>
+            <div class="col-xs-6">
+              : {{employee.contactPreference}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Phone
+            </div>
+            <div class="col-xs-6">
+              : {{employee.phoneNumber}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Email
+            </div>
+            <div class="col-xs-6">
+              : {{employee.email}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Department
+            </div>
+            <div class="col-xs-6">
+              : {{employee.department}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              Is Active
+            </div>
+            <div class="col-xs-6">
+              : {{employee.isActive}}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+-----------------------------------------------------------------------------
+4) Update component.css
+
+.imageClass{
+    width:200px;
+    height:200px;
+}
+.vertical-align{
+    display: flex;
+    align-items: center;
+}
