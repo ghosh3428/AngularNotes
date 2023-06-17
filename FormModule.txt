@@ -1,0 +1,140 @@
+<form #StForm="ngForm" (ngSubmit)="save(StForm)">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Create</h3>
+    </div>
+    <div class="panel-body">
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" type="text" class="form-control"
+               name="name" [(ngModel)]="name">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="text" class="form-control"
+               name="email" [(ngModel)]="email">
+      </div>
+
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+  </div>
+</form>
+
+Angular Generated Form Model : {{employeeForm.value | json}}
+
+
+
+1) import the FormsModule in our AppModule file (app.module.ts)
+
+2) include "FormsModule" in the imports array of @NgModule decorator.
+
+3) import NgForm type from '@angular/forms'
+
+4) 
+	save(StForm: NgForm): void {
+  console.log(StForm);
+}
+-----------------------------------------------------------------------------
+RADIO BUTTON
+
+<div class="form-group">
+  <label>Gender</label>
+  <div class="form-control">
+    <label class="radio-inline">
+      <input type="radio" name="gender" value="male" [(ngModel)]="gender">
+      Male
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="gender" value="female" [(ngModel)]="gender">
+      Female
+    </label>
+  </div>
+</div>
+
+
+Checked property does not work with angular
+
+we have to set it from component clas
+
+gender = 'male';
+
+To disable a radio button use the disabled property
+<input type="radio" name="gender" value="male" [(ngModel)]="gender" disabled>
+
+-----------------------------------------------------------------------------
+CHECK BOX
+
+<div class="form-group">
+  <div class="form-control">
+    <label class="checkbox-inline">
+      <input type="checkbox" name="isActive" [(ngModel)]="isActive">Is Active
+    </label>
+  </div>
+</div>
+
+
+Checked property does not work with angular
+
+we have to set it from component clas
+
+isActive = true;
+
+To disable a check box use the disabled property
+<input type="checkbox" name="isActive" [(ngModel)]="isActive" disabled>Is Active
+
+-----------------------------------------------------------------------------
+
+<div class="form-group">
+  <label for="department">Department</label>
+  <select id="department" name="department" class="form-control">
+    <option value="1">D1</option>
+    <option value="2">D2</option>
+    <option value="3" selected>D3</option>
+    <option value="4">D4</option>
+  </select>
+</div>
+
+Selected property does not work with angular
+
+we have to set it from component clas
+
+department = 3;
+
+To disable a select use the disabled property
+<select id="department" name="department" [(ngModel)]="department"
+        class="form-control" disabled>
+
+
+If we want to add the options dynamically
+
+1) Create Class
+
+export class Department {
+    id: number;
+    name: string;
+}
+
+2) Add the array in component
+
+departments: Department[] = [
+  { id: 1, name: 'Help Desk' },
+  { id: 2, name: 'HR' },
+  { id: 3, name: 'IT' },
+  { id: 4, name: 'Payroll' }
+];
+
+3) Update Html
+
+<div class="form-group">
+  <label for="department">Department</label>
+  <select id="department" name="department" [(ngModel)]="department"
+          class="form-control">
+    <option *ngFor="let dept of departments" [value]="dept.id">
+      {{dept.name}}
+    </option>
+  </select>
+</div>
