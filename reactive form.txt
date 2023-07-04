@@ -1,0 +1,178 @@
+export class CreateEmployeeComponent implements OnInit 
+{
+  
+  employeeForm: FormGroup;
+
+  constructor() { }
+
+  ngOnInit() {
+    this.employeeForm = new FormGroup({
+      fullName: new FormControl(),
+      email: new FormControl()
+    });
+  }
+}
+-------------------------------------------------------------------
+<form class="form-horizontal" [formGroup]="employeeForm">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Create Employee</h3>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="fullName">Full Name</label>
+        <div class="col-sm-8">
+          <input id="fullName" type="text" class="form-control" formControlName="fullName">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="email">Email</label>
+        <div class="col-sm-8">
+          <input id="email" type="text" class="form-control" formControlName="email">
+        </div>
+      </div>
+
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+  </div>
+</form>
+----------------------------------------------------------------------
+ngOnInit() {
+  this.employeeForm = new FormGroup({
+    fullName: new FormControl(),
+    email: new FormControl(),
+    // Create skills form group
+    skills: new FormGroup({
+      skillName: new FormControl(),
+      experienceInYears: new FormControl(),
+      proficiency: new FormControl()
+    })
+  });
+}
+----------------------------------------------------------------------
+<div formGroupName="skills">
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="skillName">
+      Skill
+    </label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="skillName"
+          placeholder="Name" formControlName="skillName">
+    </div>
+    <div class="col-sm-4">
+      <input type="text" placeholder="Experience in Years"
+          class="form-control" formControlName="experienceInYears">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-md-2 control-label">Proficiency</label>
+    <div class="col-md-8">
+      <label class="radio-inline">
+        <input id="proficiency" type="radio" value="beginner"
+               formControlName="proficiency">Beginner
+      </label>
+      <label class="radio-inline">
+        <input id="proficiency" type="radio" value="intermediate"
+               formControlName="proficiency">Intermediate
+      </label>
+      <label class="radio-inline">
+        <input id="proficiency" type="radio" value="advanced"
+               formControlName="proficiency">Advanced
+      </label>
+    </div>
+  </div>
+
+</div>
+---------------------------------------------------------------------
+<div class="panel-footer">
+  <div class="btn-toolbar">
+  <button class="btn btn-primary" type="submit">Save</button>
+  <button class="btn btn-primary" type="button"
+          (click)="onLoadDataClick()">Load Data</button>
+</div>
+-------------------------------------------------------
+onLoadDataClick(): void {
+  this.employeeForm.setValue({
+    fullName: 'abc',
+    email: 'abc',
+    skills: {
+      skillName: 'a',
+      experienceInYears: 1,
+      proficiency: 'c'
+    }
+  });
+}
+------------------------------------------------
+onLoadDataClick(): void {
+  this.employeeForm.patchValue({
+    fullName: 'y',
+    email: 'x',
+  });
+}
+---------------------------------------------------
+
+The FormBuilder class provides syntactic sugar that shortens creating instances of a FormControl, FormGroup, or FormArray. It reduces the amount of code we have to write to build complex reactive forms. The FormBuilder service has three methods: 
+control() - Construct a new FormControl instance
+group() - Construct a new FormGroup instance
+array() - Construct a new FormArray instance
+
+1) import { FormBuilder } from '@angular/forms';
+2) constructor(private fb: FormBuilder) { }
+3) this.employeeForm = this.fb.group({
+  fullName: [''],
+  email: [''],
+  skills: this.fb.group({
+    skillName: [''],
+    experienceInYears: [''],
+    proficiency: ['beginner']
+  }),
+});
+--------------------------------------------------------------
+import { Validators } from '@angular/forms';
+
+Function	Description
+required	Validate that a field has a value. Used for required fields. For example, Name is required.
+requiredTrue	Validate that the field value is true. This validator is commonly used on a required checkbox. For example, "I Agree to the terms" checkbox must be checked to submit the form.
+email	        Validate that the field value has a valid email pattern. For example, abc is not a valid email.
+pattern	        Validate that the field value matches the specified regex pattern.
+min	        Validate that the field value is greater than or equal to the provided number. For example, minimum age to vote is 18.
+max	        Validate that the field value is less than or equal to the provided number. For example, people over the age of 90 are not eligible for this insurance policy.
+minLength	The number of characters in the field must be greater than or equal to the provided minimum length. For example, Full Name must be at least 3 characters.
+maxLength	The number of characters in the field must be less than or equal to the provided maximum length. For example, Description cannot exceed 500 characters.
+
+
+
+
+
+this.employeeForm = this.fb.group({
+  fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(10)]],
+  // OtherFields...
+});
+
+
+<div class="form-group"
+      [ngClass]="{'has-error': ((employeeForm.get('fullName').touched ||
+                                 employeeForm.get('fullName').dirty) &&
+                                 employeeForm.get('fullName').errors)}">
+  <label class="col-sm-2 control-label" for="fullName">Full Name</label>
+  <div class="col-sm-8">
+    <input id="fullName" type="text" class="form-control" formControlName="fullName">
+    <span class="help-block"
+          *ngIf="((employeeForm.get('fullName').touched ||
+                   employeeForm.get('fullName').dirty) &&
+                   employeeForm.get('fullName').errors)">
+      <span *ngIf="employeeForm.get('fullName').errors.required">
+        Full Name is required
+      </span>
+      <span *ngIf="employeeForm.get('fullName').errors.minlength ||
+                   employeeForm.get('fullName').errors.maxlength">
+          Full Name must be greater than 2 characters and less than 10 characters
+      </span>
+    </span>
+  </div>
+</div>
