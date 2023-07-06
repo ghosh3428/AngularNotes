@@ -176,3 +176,214 @@ this.employeeForm = this.fb.group({
     </span>
   </div>
 </div>
+-------------------------------------------------------------------------
+Both FormControl and FormGroup classes inherit from the base AbstractControl class
+AbstractControl class has valueChanges property
+valueChanges property is an observable that emits an event every time the value of the control changes
+To be able to monitor and react when the FormControl or FormGroup value changes, subscribe to the valueChanges observable 
+
+
+---inside onInit()
+
+  this.employeeForm.get('fullName').valueChanges.subscribe(
+    value => {
+      console.log(value);
+    }
+  );
+
+
+this.employeeForm.valueChanges.subscribe(
+  value => {
+    console.log(JSON.stringify(value));
+  }
+);
+
+----------------------------------------------------
+using loop to print customized output
+
+
+logKeyValuePairs(group: FormGroup): void 
+{
+   // loop through each key in the FormGroup
+   Object.keys(group.controls).forEach((key: string) => 
+   {
+    	// Get a reference to the control using the FormGroup.get() method
+    	const abstractControl = group.get(key);
+    	// If the control is an instance of FormGroup i.e a nested FormGroup
+    	// then recursively call this same method (logKeyValuePairs) passing it
+    	// the FormGroup so we can get to the form controls in it
+    	if (abstractControl instanceof FormGroup) 
+	{
+      		this.logKeyValuePairs(abstractControl);
+      		// If the control is not a FormGroup then we know it's a FormControl
+    	} 
+	else 
+	{
+      		console.log('Key = ' + key + ' && Value = ' + abstractControl.value);
+    	}
+  });
+}
+------------------------------------------------------------------
+move validation to controller
+
+
+formErrors = {
+  'fullName': '',
+  'email': '',
+  'skillName': '',
+  'experienceInYears': '',
+  'proficiency': ''
+};
+
+
+validationMessages = {
+  'fullName': {
+    'required': 'Full Name is required.',
+    'minlength': 'Full Name must be greater than 2 characters.',
+    'maxlength': 'Full Name must be less than 10 characters.'
+  },
+  'email': {
+    'required': 'Email is required.'
+  },
+  'skillName': {
+    'required': 'Skill Name is required.',
+  },
+  'experienceInYears': {
+    'required': 'Experience is required.',
+  },
+  'proficiency': {
+    'required': 'Proficiency is required.',
+  },
+};
+
+ngOnInit() 
+{
+  	this.employeeForm = this.fb.group(
+	{
+    		fullName: ['', [Validators.required,Validators.minLength(2), Validators.maxLength(10)]],
+    		email: ['', Validators.required],
+    		skills: this.fb.group(
+		{
+      			skillName: ['', Validators.required],
+      			experienceInYears: ['', Validators.required],
+      			proficiency: ['', Validators.required]
+    		}),
+  	});
+
+  	this.employeeForm.valueChanges.subscribe((data) => 
+	{
+    		this.logValidationErrors(this.employeeForm);
+  	});
+}
+
+logValidationErrors(group: FormGroup): void 
+{
+  	Object.keys(group.controls).forEach((key: string) => 
+	{
+    
+    		const abstractControl = group.get(key);
+    		if (abstractControl instanceof FormGroup) 
+		{
+      			this.logValidationErrors(abstractControl);
+    		} 
+		else 
+		{
+      			this.formErrors[key] = '';
+      			if (abstractControl && !abstractControl.valid) 
+			{
+        			const messages = this.validationMessages[key];
+        
+        			for (const errorKey in abstractControl.errors) 
+				{
+          				if (errorKey) 
+					{
+            					this.formErrors[key] += messages[errorKey] + ' ';
+          				}
+        			}
+      			}
+    		}
+  	});
+}
+
+onLoadDataClick(): void {
+  this.logValidationErrors(this.employeeForm);
+  console.log(this.formErrors);
+}
+
+
+<div class="form-group" [ngClass]="{'has-error': formErrors.fullName}">
+  <label class="col-sm-2 control-label" for="fullName">Full Name</label>
+  <div class="col-sm-8">
+    <input id="fullName" type="text" class="form-control" formControlName="fullName">
+    <span class="help-block" *ngIf="formErrors.fullName">
+      {{formErrors.fullName}}
+    </span>
+  </div>
+</div>
+
+
+
+
+<div class="form-group" [ngClass]="{'has-error': formErrors.email}">
+  <label class="col-sm-2 control-label" for="email">Email</label>
+  <div class="col-sm-8">
+    <input id="email" type="text" class="form-control"
+           formControlName="email" (blur)="logValidationErrors()">
+    <span class="help-block" *ngIf="formErrors.email">
+      {{formErrors.email}}
+    </span>
+  </div>
+</div>
+
+<div class="well">
+  <div formGroupName="skills">
+
+    <div class="form-group" [ngClass]="{'has-error': formErrors.skillName}">
+      <label class="col-sm-2 control-label" for="skillName">
+        Skill
+      </label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="skillName" formControlName="skillName"
+               (blur)="logValidationErrors()" placeholder="C#, Java, Angular etc...">
+        <span class="help-block" *ngIf="formErrors.skillName">
+          {{formErrors.skillName}}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group" [ngClass]="{'has-error': formErrors.experienceInYears}">
+      <label class="col-sm-2 control-label" for="experienceInYears">
+        Experience
+      </label>
+      <div class="col-sm-4">
+        <input type="text" class="form-control" id="experienceInYears"
+               formControlName="experienceInYears" placeholder="In Years"
+              (blur)="logValidationErrors()">
+        <span class="help-block" *ngIf="formErrors.experienceInYears">
+          {{formErrors.experienceInYears}}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group" [ngClass]="{'has-error': formErrors.proficiency}">
+      <label class="col-md-2 control-label">Proficiency</label>
+      <div class="col-md-8">
+        <label class="radio-inline">
+          <input type="radio" value="beginner" formControlName="proficiency"
+                 (blur)="logValidationErrors()">Beginner
+        </label>
+        <label class="radio-inline">
+          <input type="radio" value="intermediate" formControlName="proficiency"
+                 (blur)="logValidationErrors()">Intermediate
+        </label>
+        <label class="radio-inline">
+          <input type="radio" value="advanced" formControlName="proficiency"
+                 (blur)="logValidationErrors()">Advanced
+        </label>
+        <span class="help-block" *ngIf="formErrors.experienceInYears">
+          {{formErrors.proficiency}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
